@@ -113,6 +113,8 @@ class main {
         assetA = this.normalizeAsset(assetA)
         assetB = this.normalizeAsset(assetB)
         const pair = [assetA, assetB].sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)))
+        pair[0].currency_human = this.currencyHexToUTF8(pair[0].currency)
+        pair[1].currency_human = this.currencyHexToUTF8(pair[1].currency)
         return { asset1: pair[0], asset2: pair[1], key: this.hashObject(pair) }
       },
 
