@@ -1,0 +1,35 @@
+{
+  "name": "three-liquidity",
+  "version": "0.0.1",
+  "description": "pools discovery",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "DEBUG=pools* nodemon src/liquidity.js"
+  },
+  "author": "Lathan Britz",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "dependencies": {
+    "@pm2/io": "^5.0.0",
+    "axios": "^0.24.0",
+    "cors-anywhere": "^0.4.4",
+    "crypto": "^1.0.1",
+    "debug": "^4.3.1",
+    "decimal.js": "^10.4.3",
+    "dotenv": "^10.0.0",
+    "events": "^3.3.0",
+    "express": "^5.1.0",
+    "fs": "^0.0.1-security",
+    "http": "^0.0.1-security",
+    "https": "^1.0.0",
+    "mkcert": "^3.2.0",
+    "node-cache": "^5.1.2",
+    "ws": "^8.2.3",
+    "xrpl": "^4.4.0",
+    "xrpl-accountlib": "^9.0.1",
+    "xrpl-client": "^2.4.0",
+    "xrpl-secret-numbers": "^0.3.5"
+  }
+}
