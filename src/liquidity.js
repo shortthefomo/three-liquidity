@@ -31,9 +31,6 @@ class main {
       start() {
         this.run()
         this.service()
-        setInterval(async () => {
-          log('Pairs', Object.entries(pairDetails).length)
-        }, 6000)
       },
       async run() {
         const rippledServer = process.env.RIPPLED
@@ -41,6 +38,7 @@ class main {
         await self.discoverAllPairs(rippledServer)
         setTimeout(() => {
           self.run()
+          log('Pairs', Object.entries(pairDetails).length)
         }, 60000)
       },
       service() {
@@ -84,6 +82,7 @@ class main {
         return asset
       },
       currencyHexToUTF8(code) {
+        if (code === undefined) return 'XRP'
         if (code.length === 3)
           return code
 
@@ -130,6 +129,7 @@ class main {
           return {
             amount1: amm.amount,
             amount2: amm.amount2,
+            ratio: (typeof amm.amount2 == 'object' ? amm.amount2.value : (amm.amount2) / 1_000_000) / (typeof amm.amount == 'object' ? amm.amount.value : (amm.amount) / 1_000_000),
             lp_token: amm.lp_token?.value || '0',
             trading_fee: amm.trading_fee
           }
@@ -174,9 +174,6 @@ class main {
                 amount2: assetA.currency === 'XRP' ? liquidityA : {currency: assetA.currency, issuer: assetA.issuer, value: liquidityA},
                 offers: response.result.offers.length
               },
-              asset1,
-              asset2
-              
             }
           }
           marker = response.result.marker
@@ -219,8 +216,6 @@ class main {
               }
 
               pairDetails[key]['AMM'] = {
-                asset1,
-                asset2,
                 liquidity,
                 pool: entry.Account
               }
@@ -236,6 +231,7 @@ class main {
 
 
       async discoverAllPairs(rippledServer = process.env.RIPPLED) {
+        log(`Discovering all pairs from XRPL`)
         try {
           // Connect to your XRPL node
           const client = new xrpl.Client(rippledServer)
@@ -266,22 +262,17 @@ class main {
               log(`${this.currencyHexToUTF8(value.asset1.currency)}:${value.asset1.issuer}/${this.currencyHexToUTF8(value.asset2.currency)}:${value.asset2.issuer}`)
             }
             
-
-            let ratioAMM, ratioDEX
             if (value.AMM !== undefined) {
               log(`  Pool: ${value.AMM.pool}`)
-              ratioAMM = (typeof value.AMM.liquidity.amount1 == 'object' ? value.AMM.liquidity.amount1.value : (value.AMM.liquidity.amount1) / 1_000_000) / (typeof value.AMM.liquidity.amount2 == 'object' ? value.AMM.liquidity.amount2.value : (value.AMM.liquidity.amount2) / 1_000_000)
-              ratioDEX = (typeof value.DEX.liquidity.amount1 == 'object' ? value.DEX.liquidity.amount1.value : (value.DEX.liquidity.amount1) / 1_000_000) / (typeof value.DEX.liquidity.amount2 == 'object' ? value.DEX.liquidity.amount2.value : (value.DEX.liquidity.amount2) / 1_000_000)
-              log(`  AMM Liquidity: ${typeof value.AMM.liquidity.amount1 == 'object' ? value.AMM.liquidity.amount1.value : (value.AMM.liquidity.amount1) / 1_000_000} ${this.currencyHexToUTF8(value.AMM.asset1.currency)}, ${typeof value.AMM.liquidity.amount2 == 'object' ? value.AMM.liquidity.amount2.value : (value.AMM.liquidity.amount2) / 1_000_000} ${this.currencyHexToUTF8(value.AMM.asset2.currency)}`)
+              log(`  AMM Liquidity: ${typeof value.AMM.liquidity.amount1 == 'object' ? value.AMM.liquidity.amount1.value : (value.AMM.liquidity.amount1) / 1_000_000} ${this.currencyHexToUTF8(value.AMM.liquidity.amount1.currency)}, ${typeof value.AMM.liquidity.amount2 == 'object' ? value.AMM.liquidity.amount2.value : (value.AMM.liquidity.amount2) / 1_000_000} ${this.currencyHexToUTF8(value.AMM.liquidity.amount2.currency)}`)
+              log(`  Ratio AMM ${value.AMM.liquidity.ratio}`)
               log(`  LP Token Supply: ${value.AMM.liquidity.lp_token}`)
               log(`  Trading Fee: ${value.AMM.liquidity.trading_fee}`)
             }
             if (value.DEX !== undefined) {
-              log(`  DEX Liquidity: ${typeof value.DEX.liquidity.amount1 == 'object' ? value.DEX.liquidity.amount1.value : (value.DEX.liquidity.amount1) / 1_000_000} ${this.currencyHexToUTF8(value.DEX.asset1.currency)}, ${typeof value.DEX.liquidity.amount2 == 'object' ? value.DEX.liquidity.amount2.value : (value.DEX.liquidity.amount2) / 1_000_000} ${this.currencyHexToUTF8(value.DEX.asset2.currency)}`)
+              log(`  DEX Liquidity: ${typeof value.DEX.liquidity.amount1 == 'object' ? value.DEX.liquidity.amount1.value : (value.DEX.liquidity.amount1) / 1_000_000} ${this.currencyHexToUTF8(value.DEX.liquidity.amount1.currency)}, ${typeof value.DEX.liquidity.amount2 == 'object' ? value.DEX.liquidity.amount2.value : (value.DEX.liquidity.amount2) / 1_000_000} ${this.currencyHexToUTF8(value.DEX.liquidity.amount2.currency)}`)
               log(`  Offers: ${value.DEX.liquidity.offers == undefined ? 0 : value.DEX.liquidity.offers}`)
             }
-            log(`  Ratio AMM ${ratioAMM}`)
-            log(`  Ratio DEX ${ratioDEX}`)
           }
 
           // Disconnect
