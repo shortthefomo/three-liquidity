@@ -26,6 +26,7 @@ class main {
     // Store unique pairs and their details
     const uniquePairs = new Set()
     const pairDetails = {}
+    let timeout = undefined
 
 		Object.assign(this, {
       start() {
@@ -33,10 +34,13 @@ class main {
         this.service()
       },
       async run() {
+        if (timeout !== undefined) {
+          clearTimeout(timeout)
+        }
         const rippledServer = process.env.RIPPLED
         const self = this
         await self.discoverAllPairs(rippledServer)
-        setTimeout(() => {
+        timeout = setTimeout(() => {
           self.run()
           log('Pairs', Object.entries(pairDetails).length)
         }, 60000)
