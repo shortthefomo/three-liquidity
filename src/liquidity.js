@@ -167,7 +167,6 @@ class main {
           // log('book', response.result.offers)
           let liquidityA = 0
           let liquidityB = 0
-          log(response.result.offers)
           response.result.offers.forEach(offer => {
             if ('Expiration' in offer && offer.Expiration > self.ledgerEpoch()) { return }
 
