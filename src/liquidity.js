@@ -19,7 +19,7 @@ dotenv.config()
 log('using http: for webhead: ' + (process.env.APP_PORT))
 
 
-let httpServer = http.createServer(app).listen(process.env.APP_PORT)
+http.createServer(app).listen(process.env.APP_PORT)
 
 class main {
 	constructor(Config) {
@@ -46,7 +46,7 @@ class main {
         }, 60000)
       },
       service() {
-				const self = this
+				// const self = this
 				app.get('/api/v1/liquidity', async function(req, res) {
 					res.setHeader('Access-Control-Allow-Origin', '*')
             log('Called: ' + req.route.path, req.query)
