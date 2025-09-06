@@ -289,7 +289,7 @@ class main {
           return pairDetails
         } catch (error) {
           log('error', 'Error discovering pairs:', error)
-          throw error
+          // throw error
         }
       },
       async pause(milliseconds = 1000) {
