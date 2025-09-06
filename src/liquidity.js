@@ -147,7 +147,7 @@ class main {
       async fetchCLOBBook(client, assetA, assetB) {
         let marker
         let entryCount = 0
-
+        const self = this
         // Process order books
         do {
           const request = {
@@ -169,6 +169,8 @@ class main {
           let liquidityB = 0
           log(response.result.offers)
           response.result.offers.forEach(offer => {
+            if ('Expiration' in offer && offer.Expiration > self.ledgerEpoch()) { return }
+
             if (offer.taker_pays_funded !== undefined) {
               entryCount++
               liquidityA += typeof offer.TakerGets === 'object' ? parseFloat(offer.TakerGets.value) : parseFloat(offer.TakerGets)
@@ -238,7 +240,10 @@ class main {
         } while (marker)
       },
 
-
+      ledgerEpoch() {
+            const unix_time = Date.now() 
+            return Math.floor((unix_time) / 1000) - 946684800
+      },
       async discoverAllPairs(rippledServer = process.env.RIPPLED) {
         log(`Discovering all pairs from XRPL`)
         try {
