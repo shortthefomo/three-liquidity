@@ -167,10 +167,13 @@ class main {
           // log('book', response.result.offers)
           let liquidityA = 0
           let liquidityB = 0
+          log(response.result.offers)
           response.result.offers.forEach(offer => {
-            entryCount++
-            liquidityA += typeof offer.TakerGets === 'object' ? parseFloat(offer.TakerGets.value) : parseFloat(offer.TakerGets)
-            liquidityB += typeof offer.TakerPays === 'object' ? parseFloat(offer.TakerPays.value) : parseFloat(offer.TakerPays)
+            if (offer.taker_pays_funded !== undefined) {
+              entryCount++
+              liquidityA += typeof offer.TakerGets === 'object' ? parseFloat(offer.TakerGets.value) : parseFloat(offer.TakerGets)
+              liquidityB += typeof offer.TakerPays === 'object' ? parseFloat(offer.TakerPays.value) : parseFloat(offer.TakerPays)  
+            }
           })
           if (response.result.offers.length > 0) {
             const { asset1, asset2, key } = this.getPairKey(assetA, assetB)
