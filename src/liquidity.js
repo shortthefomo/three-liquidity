@@ -27,6 +27,7 @@ class main {
     const uniquePairs = new Set()
     const pairDetails = {}
     let timeout = undefined
+    let time = new Date().getTime()
 
 		Object.assign(this, {
       start() {
@@ -50,6 +51,7 @@ class main {
 				app.get('/api/v1/liquidity', async function(req, res) {
 					res.setHeader('Access-Control-Allow-Origin', '*')
             log('Called: ' + req.route.path, req.query)
+            pairDetails.time = time
             res.json(pairDetails)
         })
       },
@@ -257,6 +259,7 @@ class main {
           
           log('Scanning order books...')
           await this.fetchAMMPools(client)
+          time = new Date().getTime()
 
           // Output results
           // log(`\nDiscovered Pairs for ${token}${issuer ? ` (Issuer: ${issuer})` : ''}:`)
