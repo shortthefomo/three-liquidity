@@ -24,7 +24,6 @@ http.createServer(app).listen(process.env.APP_PORT)
 class main {
 	constructor(Config) {
     // Store unique pairs and their details
-    const uniquePairs = new Set()
     const pairDetails = {}
     let timeout = undefined
     let time = new Date().getTime()
@@ -132,7 +131,7 @@ class main {
             log('warn', `Failed to fetch AMM liquidity for ${asset1.currency}/${asset2.currency}:`, error.message)
             return null
           }
-
+          
           const amm = response.result.amm
           return {
             amount1: amm.amount,
@@ -219,20 +218,17 @@ class main {
             const assetB = this.normalizeAsset(entry.Asset2)
 
             const { asset1, asset2, key } = this.getPairKey(assetA, assetB)
-            if (!uniquePairs.has(key)) {
-              uniquePairs.add(key)
-              const liquidity = await this.fetchAMMLiquidity(client, asset1, asset2)
-              pairDetails[key] = {
-                asset1,
-                asset2
-              }
-
-              pairDetails[key]['AMM'] = {
-                liquidity,
-                pool: entry.Account
-              }
-              await this.fetchCLOBBook(client, assetA, assetB, pairDetails)
+            const liquidity = await this.fetchAMMLiquidity(client, asset1, asset2)
+            pairDetails[key] = {
+              asset1,
+              asset2
             }
+
+            pairDetails[key]['AMM'] = {
+              liquidity,
+              pool: entry.Account
+            }
+            await this.fetchCLOBBook(client, assetA, assetB, pairDetails)
           }
 
           marker = response.result.marker
@@ -242,8 +238,8 @@ class main {
       },
 
       ledgerEpoch() {
-            const unix_time = Date.now() 
-            return Math.floor((unix_time) / 1000) - 946684800
+        const unix_time = Date.now() 
+        return Math.floor((unix_time) / 1000) - 946684800
       },
       async discoverAllPairs(rippledServer = process.env.RIPPLED) {
         log(`Discovering all pairs from XRPL`)
