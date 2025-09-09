@@ -120,7 +120,7 @@ class main {
       },
 
       // Helper to fetch AMM liquidity details
-      async fetchAMMLiquidity(client, asset1, asset2) {
+      async fetchAMMLiquidity(client, asset1, asset2, key) {
         try {
           const response = await client.request({
             command: 'amm_info',
@@ -133,10 +133,13 @@ class main {
           }
           
           const amm = response.result.amm
+          const ratio = (typeof amm.amount2 == 'object' ? amm.amount2.value : (amm.amount2) / 1_000_000) / (typeof amm.amount == 'object' ? amm.amount.value : (amm.amount) / 1_000_000)
+          const ratio_change = (pairDetails[key] !== undefined) ? pairDetails[key]['AMM'].liquidity.ratio : ratio
           return {
             amount1: amm.amount,
             amount2: amm.amount2,
-            ratio: (typeof amm.amount2 == 'object' ? amm.amount2.value : (amm.amount2) / 1_000_000) / (typeof amm.amount == 'object' ? amm.amount.value : (amm.amount) / 1_000_000),
+            ratio,
+            ratio_change,
             lp_token: amm.lp_token?.value || '0',
             trading_fee: amm.trading_fee
           }
@@ -218,7 +221,7 @@ class main {
             const assetB = this.normalizeAsset(entry.Asset2)
 
             const { asset1, asset2, key } = this.getPairKey(assetA, assetB)
-            const liquidity = await this.fetchAMMLiquidity(client, asset1, asset2)
+            const liquidity = await this.fetchAMMLiquidity(client, asset1, asset2, key)
             pairDetails[key] = {
               asset1,
               asset2
