@@ -276,7 +276,12 @@ class main {
             else {
               log(`${this.currencyHexToUTF8(value.asset1.currency)}:${value.asset1.issuer}/${this.currencyHexToUTF8(value.asset2.currency)}:${value.asset2.issuer}`)
             }
-            
+
+            if (value.AMM.liquidity.amount1 === null) {
+              // sometimes we have anull remove it
+              delete pairDetails[key]
+            }
+
             if (value.AMM !== undefined) {
               log(`  Pool: ${value.AMM.pool}`)
               log(`  AMM Liquidity: ${typeof value.AMM.liquidity.amount1 == 'object' ? value.AMM.liquidity.amount1.value : (value.AMM.liquidity.amount1) / 1_000_000} ${this.currencyHexToUTF8(value.AMM.liquidity.amount1.currency)}, ${typeof value.AMM.liquidity.amount2 == 'object' ? value.AMM.liquidity.amount2.value : (value.AMM.liquidity.amount2) / 1_000_000} ${this.currencyHexToUTF8(value.AMM.liquidity.amount2.currency)}`)
