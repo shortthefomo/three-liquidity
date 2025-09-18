@@ -53,6 +53,23 @@ class main {
             pairDetails.time = time
             res.json(pairDetails)
         })
+
+        app.get('/api/v1/liquidity-single-asset', async function(req, res) {
+          res.setHeader('Access-Control-Allow-Origin', '*')
+          if (!('currency' in req.query)) { return res.json({ 'error' : 'missing parameter currency'}) }
+          if (!('issuer' in req.query)) { return res.json({ 'error' : 'missing parameter issuer'}) }
+
+            const asset_narrow = {}
+            for (const [key, value] of Object.entries(pairDetails)) {
+              if (value.asset1.currency !== req.query.currency || value.asset2.currency !== req.query.currency) { continue }
+              if (value.asset1.issuer !== req.query.issuer || value.asset2.issuer !== req.query.issuer) { continue }
+              asset_narrow[key] = value
+            }
+
+            log('Called: ' + req.route.path, req.query)
+            asset_narrow.time = time
+            res.json(asset_narrow)
+        })
       },
       hashObject(obj) {
         // Convert the object to a consistent JSON string.
