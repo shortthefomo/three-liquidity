@@ -63,8 +63,9 @@ class main {
             for (const [key, value] of Object.entries(pairDetails)) {
               if (value.asset1.currency !== req.query.currency && value.asset2.currency !== req.query.currency) { continue }
 
-              if ((req.query.currency === 'XRP' && value.asset1.currency !== req.query.currency && value.asset1.issuer !== undefined) || 
-                (req.query.currency === 'XRP' && value.asset2.currency !== req.query.currency && value.asset2.issuer !== undefined)) { continue }
+              if (req.query.currency === 'XRP' && 
+                (value.asset1.currency !== req.query.currency && value.asset1.issuer !== undefined) && 
+                (value.asset2.currency !== req.query.currency && value.asset2.issuer !== undefined)) { continue }
               if (req.query.currency !== 'XRP' && value.asset1.issuer !== req.query.issuer && value.asset2.issuer !== req.query.issuer) { continue }
               asset_narrow[key] = value
             }
