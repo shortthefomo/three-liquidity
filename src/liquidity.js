@@ -79,11 +79,11 @@ class main {
           res.setHeader('Access-Control-Allow-Origin', '*')
           const tokens = []
             for (const [key, value] of Object.entries(pairDetails)) {
-              if (!tokens.includes(value.asset2.issuer)) {
-                tokens.push(value.asset2.issuer)
+              if (!tokens.includes(value.asset2.curr)) {
+                tokens.push({ 'label': value.asset2.currency_human, value: value.asset2.currency})
               }
               if (!tokens.includes(value.asset1.issuer)) {
-                tokens.push(value.asset1.issuer)
+                tokens.push({ 'label': value.asset1.currency_human, value: value.asset1.currency}) 
               }
             }
 
