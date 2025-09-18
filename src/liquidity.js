@@ -70,6 +70,22 @@ class main {
             asset_narrow.time = time
             res.json(asset_narrow)
         })
+
+        app.get('/api/v1/tokens', async function(req, res) {
+          res.setHeader('Access-Control-Allow-Origin', '*')
+          const tokens = []
+            for (const [key, value] of Object.entries(pairDetails)) {
+              if (!tokens.includes(value.asset2.issuer)) {
+                tokens.push(value.asset2.issuer)
+              }
+              if (!tokens.includes(value.asset1.issuer)) {
+                tokens.push(value.asset1.issuer)
+              }
+            }
+
+            log('Called: ' + req.route.path, req.query)
+            res.json(tokens)
+        })
       },
       hashObject(obj) {
         // Convert the object to a consistent JSON string.
