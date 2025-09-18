@@ -66,7 +66,10 @@ class main {
               if (req.query.currency === 'XRP' && 
                 (value.asset1.currency !== req.query.currency && value.asset1.issuer !== undefined) && 
                 (value.asset2.currency !== req.query.currency && value.asset2.issuer !== undefined)) { continue }
-              if (req.query.currency !== 'XRP' && value.asset1.issuer !== req.query.issuer && value.asset2.issuer !== req.query.issuer) { continue }
+
+
+              if (req.query.currency !== 'XRP' && req.query.issuer !== undefined && value.asset1.issuer !== req.query.issuer && value.asset2.issuer !== req.query.issuer) { continue }
+              if (req.query.currency !== 'XRP' && req.query.issuer === undefined && value.asset2.issuer !== req.query.issuer) { continue }
               asset_narrow[key] = value
             }
 
