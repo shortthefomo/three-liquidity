@@ -54,6 +54,12 @@ class main {
             res.json(pairDetails)
         })
 
+        app.get('/api/v1/time', async function(req, res) {
+					res.setHeader('Access-Control-Allow-Origin', '*')
+            log('Called: ' + req.route.path, req.query)
+            res.json(time)
+        })
+
         app.get('/api/v1/liquidity-single-asset', async function(req, res) {
           res.setHeader('Access-Control-Allow-Origin', '*')
           if (!('currency' in req.query)) { return res.json({ 'error' : 'missing parameter currency'}) }
