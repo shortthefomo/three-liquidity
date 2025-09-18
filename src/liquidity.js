@@ -59,6 +59,7 @@ class main {
           if (!('currency' in req.query)) { return res.json({ 'error' : 'missing parameter currency'}) }
           if (!('issuer' in req.query)) { return res.json({ 'error' : 'missing parameter issuer'}) }
 
+          console.log('issuer', req.query.issuer)
             const asset_narrow = {}
             for (const [key, value] of Object.entries(pairDetails)) {
               if (value.asset1.currency !== req.query.currency && value.asset2.currency !== req.query.currency) { continue }
@@ -67,9 +68,9 @@ class main {
                 (value.asset1.currency !== req.query.currency && value.asset1.issuer !== undefined) && 
                 (value.asset2.currency !== req.query.currency && value.asset2.issuer !== undefined)) { continue }
 
-
               if (req.query.currency !== 'XRP' && req.query.issuer !== undefined && value.asset1.issuer !== req.query.issuer && value.asset2.issuer !== req.query.issuer) { continue }
-              if (req.query.currency !== 'XRP' && req.query.issuer === undefined && value.asset2.issuer !== req.query.issuer) { continue }
+   
+
               asset_narrow[key] = value
             }
 
