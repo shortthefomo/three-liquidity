@@ -91,11 +91,12 @@ class main {
           res.setHeader('Access-Control-Allow-Origin', '*')
           const tokens = []
             for (const [key, value] of Object.entries(pairDetails)) {
-
+              if (value.asset2 === undefined) { continue }
               const tokenA = tokens.find((item) => item.value === value.asset2.currency)
               if (!tokenA) {
                   tokens.push({ 'label': value.asset2.currency_human, value: value.asset2.currency})    
               }
+              if (value.asset1 === undefined) { continue }
               const tokenB = tokens.find((item) => item.value === value.asset1.currency)
               if (!tokenB) {
                   tokens.push({ 'label': value.asset1.currency_human, value: value.asset1.currency})    
