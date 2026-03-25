@@ -312,16 +312,29 @@ class main {
           await client.connect()
           log('Connected to XRPL node.')
 
-          
-          
-          
+          // Subscribe to transaction stream for AMMDelete
+          await client.request({ command: 'subscribe', streams: ['transactions'] })
+          client.on('transaction', (event) => {
+            try {
+              if (event.transaction && event.transaction.TransactionType === 'AMMDelete') {
+                const assetA = this.normalizeAsset(event.transaction.Asset)
+                const assetB = this.normalizeAsset(event.transaction.Asset2)
+                const { key } = this.getPairKey(assetA, assetB)
+                if (pairDetails[key]) {
+                  log(`AMMDelete detected, removing pairDetails[${key}]`)
+                  delete pairDetails[key]
+                }
+              }
+            } catch (err) {
+              log('error', 'Error handling AMMDelete:', err)
+            }
+          })
+
           log('Scanning order books...')
           await this.fetchAMMPools(client)
           time = new Date().getTime()
 
           // Output results
-          // log(`\nDiscovered Pairs for ${token}${issuer ? ` (Issuer: ${issuer})` : ''}:`)
-          // log(pairDetails)
           for (const [key, value] of Object.entries(pairDetails)) {
             // only really interested in DEX + AMM pools for now
             if (value.DEX == undefined) { continue }
