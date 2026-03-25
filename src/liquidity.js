@@ -290,7 +290,7 @@ class main {
               liquidity,
               pool: entry.Account
             }
-            await this.fetchCLOBBook(client, assetA, assetB, pairDetails)
+            // await this.fetchCLOBBook(client, assetA, assetB, pairDetails)
           }
 
           marker = response.result.marker
