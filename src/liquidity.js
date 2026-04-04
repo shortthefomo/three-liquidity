@@ -186,14 +186,22 @@ class main {
             asset: asset1,
             asset2: asset2
           })
-          if ('error' in response.result) { 
-            log('warn', `Failed to fetch AMM liquidity for ${asset1.currency}/${asset2.currency}:`, error.message)
+          // Validate response structure
+          if (!response || !response.result || response.result.error) {
+            log('warn', `Invalid response from server`)
+            return null
+          } 
+          if (!response.result.amm) {
+            log('warn', `Failed to fetch AMM liquidity for ${asset1.currency}/${asset2.currency}:`, response?.result?.error_message || 'Invalid response')
             return null
           }
-          
           const amm = response.result.amm
+          if (!amm.amount || !amm.amount2) {
+            log('warn', `AMM liquidity missing amount fields for ${asset1.currency}/${asset2.currency}`)
+            return null
+          }
           const ratio = (typeof amm.amount2 == 'object' ? amm.amount2.value : (amm.amount2) / 1_000_000) / (typeof amm.amount == 'object' ? amm.amount.value : (amm.amount) / 1_000_000)
-          const ratio_change = (pairDetails[key] !== undefined) ? pairDetails[key]['AMM'].liquidity.ratio : ratio
+          const ratio_change = (pairDetails[key] !== undefined && pairDetails[key]['AMM'] && pairDetails[key]['AMM'].liquidity && pairDetails[key]['AMM'].liquidity.ratio !== undefined) ? pairDetails[key]['AMM'].liquidity.ratio : ratio
           return {
             amount1: amm.amount,
             amount2: amm.amount2,
@@ -349,12 +357,14 @@ class main {
               log(`${this.currencyHexToUTF8(value.asset1.currency)}:${value.asset1.issuer}/${this.currencyHexToUTF8(value.asset2.currency)}:${value.asset2.issuer}`)
             }
 
-            if (value.AMM.liquidity.amount1 === null) {
-              // sometimes we have anull remove it
+            // Null/invalid AMM liquidity cleanup
+            if (!value.AMM || !value.AMM.liquidity || value.AMM.liquidity.amount1 === null || value.AMM.liquidity.amount2 === null) {
+              // sometimes we have a null, remove it
               delete pairDetails[key]
+              continue
             }
 
-            if (value.AMM !== undefined) {
+            if (value.AMM !== undefined && value.AMM.liquidity) {
               log(`  Pool: ${value.AMM.pool}`)
               log(`  AMM Liquidity: ${typeof value.AMM.liquidity.amount1 == 'object' ? value.AMM.liquidity.amount1.value : (value.AMM.liquidity.amount1) / 1_000_000} ${this.currencyHexToUTF8(value.AMM.liquidity.amount1.currency)}, ${typeof value.AMM.liquidity.amount2 == 'object' ? value.AMM.liquidity.amount2.value : (value.AMM.liquidity.amount2) / 1_000_000} ${this.currencyHexToUTF8(value.AMM.liquidity.amount2.currency)}`)
               log(`  Ratio AMM ${value.AMM.liquidity.ratio}`)
